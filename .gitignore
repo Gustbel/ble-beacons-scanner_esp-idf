@@ -1,0 +1,5 @@
+# IDEs an other tools related
+*.code-workspace
+
+# Build directories
+[Bb]uild/
