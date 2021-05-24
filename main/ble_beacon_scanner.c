@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include "nvs_flash.h"
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_bt.h"
 #include "esp_gap_ble_api.h"
 #include "esp_gattc_api.h"
@@ -17,7 +19,7 @@
 #include "esp_bt_defs.h"
 #include "esp_ibeacon_api.h"
 #include "esp_log.h"
-#include "freertos/FreeRTOS.h"
+
 
 static const char* DEMO_TAG = "BEACON_SCANNER";
 extern esp_ble_ibeacon_vendor_t vendor_config;
@@ -122,14 +124,7 @@ void ble_ibeacon_appRegister(void)
 
 }
 
-void ble_ibeacon_init(void)
-{
-    esp_bluedroid_init();
-    esp_bluedroid_enable();
-    ble_ibeacon_appRegister();
-}
-
-void app_main(void)
+void init_ble_beacon_scan(void)
 {
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT));
@@ -137,8 +132,13 @@ void app_main(void)
     esp_bt_controller_init(&bt_cfg);
     esp_bt_controller_enable(ESP_BT_MODE_BLE);
 
-    ble_ibeacon_init();
+    esp_bluedroid_init();
+    esp_bluedroid_enable();
+    ble_ibeacon_appRegister();
+}
 
-    /* set scan parameters */
-    esp_ble_gap_set_scan_params(&ble_scan_params);
+void scan_ble_beacons(void)
+{
+	// Scan only once
+	esp_ble_gap_set_scan_params(&ble_scan_params);
 }
